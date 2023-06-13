@@ -1,32 +1,20 @@
 package com.pruebatecnica.pruebatecnica.controller;
-
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-
 import com.pruebatecnica.pruebatecnica.entity.TaskModel;
-import com.pruebatecnica.pruebatecnica.repository.TaskRepository;
+import com.pruebatecnica.pruebatecnica.service.TaskService;
 
 @ExtendWith(MockitoExtension.class)
 public class TaskControllerTests {
@@ -34,7 +22,7 @@ public class TaskControllerTests {
     TaskController taskController;
 
     @Mock
-    TaskRepository taskRepository;
+    TaskService taskService;
 
     @Test
     public void getTaskAPI() throws Exception 
@@ -45,7 +33,7 @@ public class TaskControllerTests {
 
         List<TaskModel> list =  Arrays.asList(taskModel1);
 
-        when(taskRepository.findAll()).thenReturn(list);
+        when(taskService.findAll()).thenReturn(list);
 
         List<TaskModel> result = taskController.list();
         
@@ -59,7 +47,7 @@ public class TaskControllerTests {
         TaskModel taskModel1 = new TaskModel();
         taskModel1.setDescription("Description task 1");
 
-        when(taskRepository.save(taskModel1)).thenReturn(taskModel1);
+        when(taskService.save(taskModel1)).thenReturn(taskModel1);
 
         ResponseEntity<?> responseEntity  = taskController.create(taskModel1);
         
@@ -94,7 +82,7 @@ public class TaskControllerTests {
         taskModel.setActive(true);
 
         Optional<TaskModel> optionalTask=  Optional.of(savedTask);
-        when(taskRepository.findById(1L)).thenReturn(optionalTask);
+        when(taskService.findById(Mockito.anyLong())).thenReturn(optionalTask);
 
         ResponseEntity<?> responseEntity  = taskController.update(taskModel);
         
@@ -111,7 +99,7 @@ public class TaskControllerTests {
         taskModel.setActive(true);
 
         Optional<TaskModel> optionalTask = Optional.empty();
-        when(taskRepository.findById(1L)).thenReturn(optionalTask);
+        when(taskService.findById(Mockito.anyLong())).thenReturn(optionalTask);
 
         ResponseEntity<?> responseEntity  = taskController.update(taskModel);
         
@@ -122,24 +110,14 @@ public class TaskControllerTests {
     @Test
     public void putTaskAPIAndReturnErrorDescriptionEmpty() throws Exception 
     {
-        TaskModel savedTask = new TaskModel();
-        savedTask.setId(1L);
-        savedTask.setDescription("saved description");
-        savedTask.setActive(false);
-
-
         TaskModel taskModel = new TaskModel();
         taskModel.setId(1L);
         taskModel.setDescription("");
         taskModel.setActive(true);
 
-        Optional<TaskModel> optionalTask = Optional.of(savedTask);
-        when(taskRepository.findById(1L)).thenReturn(optionalTask);
-
         ResponseEntity<?> responseEntity  = taskController.update(taskModel);
         
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-
     }
 
     @Test
@@ -152,7 +130,7 @@ public class TaskControllerTests {
 
 
         Optional<TaskModel> optionalTask = Optional.of(savedTask);
-        when(taskRepository.findById(1L)).thenReturn(optionalTask);
+        when(taskService.findById(Mockito.anyLong())).thenReturn(optionalTask);
 
         ResponseEntity<?> responseEntity  = taskController.delete(1L);
         
@@ -165,7 +143,7 @@ public class TaskControllerTests {
     {
         
         Optional<TaskModel> optionalTask = Optional.empty();
-        when(taskRepository.findById(1L)).thenReturn(optionalTask);
+        when(taskService.findById(Mockito.anyLong())).thenReturn(optionalTask);
 
         ResponseEntity<?> responseEntity  = taskController.delete(1L);
         

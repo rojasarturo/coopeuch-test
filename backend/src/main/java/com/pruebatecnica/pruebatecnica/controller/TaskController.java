@@ -2,6 +2,7 @@ package com.pruebatecnica.pruebatecnica.controller;
 
 import com.pruebatecnica.pruebatecnica.entity.TaskModel;
 import com.pruebatecnica.pruebatecnica.repository.TaskRepository;
+import com.pruebatecnica.pruebatecnica.service.TaskService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,44 +24,45 @@ import java.util.Optional;
 @RequestMapping("/task")
 public class TaskController {
     @Autowired
-    TaskRepository taskRepository;
+    TaskService taskService;
 
     @PostMapping
     public ResponseEntity<?> create(@RequestBody TaskModel task) {
         if(task.getDescription().isEmpty()){
             return ResponseEntity.badRequest().body("Description field is mandatory");
         }
-        return new ResponseEntity<>(taskRepository.save(task), HttpStatus.OK);
+        return new ResponseEntity<>(taskService.save(task), HttpStatus.OK);
     }
 
     @GetMapping
     public List<TaskModel> list() {
-        return taskRepository.findAll();
+        return taskService.findAll();
     }
 
     @PutMapping
     public ResponseEntity<?> update(@RequestBody TaskModel task) {	
-        Optional<TaskModel> optionalTask = taskRepository.findById(task.getId());
-
-        if (!optionalTask.isPresent()) {
-            return ResponseEntity.badRequest().body("Task id dont exists");
-        }
         if(task.getDescription().isEmpty()){
             return ResponseEntity.badRequest().body("Description field is mandatory");
         }
+
+        Optional<TaskModel> optionalTask = taskService.findById(task.getId());
+        if (!optionalTask.isPresent()) {
+            return ResponseEntity.badRequest().body("Task id dont exists");
+        }
+
         TaskModel updateTask = optionalTask.get();
         updateTask.setDescription(task.getDescription());
         updateTask.setActive(task.getActive() ?  task.getActive() : updateTask.getActive());
-        return new ResponseEntity<>(taskRepository.saveAndFlush(updateTask), HttpStatus.OK);
+        return new ResponseEntity<>(taskService.saveAndFlush(updateTask), HttpStatus.OK);
     }
 
     @DeleteMapping
     public ResponseEntity<?> delete(@RequestParam Long id){
-        Optional<TaskModel> optionalTask = taskRepository.findById(id);
+        Optional<TaskModel> optionalTask = taskService.findById(id);
         if (!optionalTask.isPresent()) {
             return ResponseEntity.badRequest().body("Task id dont exists");
         }
-    	taskRepository.deleteById(id);
+    	taskService.deleteById(id);
     	return ResponseEntity.ok("Entity deleted");
     }
 }
