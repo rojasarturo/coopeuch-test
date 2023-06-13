@@ -1,8 +1,15 @@
 # TO RUN LOCALLY
 ./mvnw spring-boot:run
+## URL SWAGGER
+```
+http://localhost:8080/doc/swagger-ui/index.html
+```
+
 
 # TO RUN TEST
+```
 ./mvnw test
+```
 
 # EXAMPLE APIs
 ## GET

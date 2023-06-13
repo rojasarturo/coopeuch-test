@@ -1,7 +1,6 @@
 package com.pruebatecnica.pruebatecnica.controller;
 
 import com.pruebatecnica.pruebatecnica.entity.TaskModel;
-import com.pruebatecnica.pruebatecnica.repository.TaskRepository;
 import com.pruebatecnica.pruebatecnica.service.TaskService;
 
 import org.springframework.beans.factory.annotation.Autowired;
